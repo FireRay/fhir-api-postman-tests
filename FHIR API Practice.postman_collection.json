@@ -1,0 +1,311 @@
+{
+  "info": {
+    "_postman_id": "e614ace7-f6e0-4ab0-b003-dfe7e2b8a0f8",
+    "name": "FHIR API Practice",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "11471188"
+  },
+  "item": [
+    {
+      "name": "GET /Patient",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const response = pm.response.json();\r",
+              "\r",
+              "//HTTP validation\r",
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "//Data validation\r",
+              "pm.test(\"Response is a Bundle\", function () {\r",
+              "    pm.expect(response.resourceType).to.eql(\"Bundle\");\r",
+              "    pm.expect(response.type).to.eql(\"searchset\");\r",
+              "    pm.expect(response.entry).to.be.an(\"array\");\r",
+              "});\r",
+              "\r",
+              "//Business logic validation\r",
+              "pm.test(\"Bundle contains at least one Patient\", function () {\r",
+              "    pm.expect(response.entry.length).to.be.above(0);\r",
+              "\r",
+              "    response.entry.forEach(function (item) {\r",
+              "        pm.expect(item.resource.resourceType).to.eql(\"Patient\");\r",
+              "    });\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/Patient",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "Patient"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /Patient",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const response = pm.response.json();\r",
+              "\r",
+              "const expectedFirstName = response.name[0].given[0];\r",
+              "\r",
+              "//HTTP validation\r",
+              "pm.test(\"Status code is 201\", function () {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});\r",
+              "\r",
+              "//Data validation\r",
+              "pm.test(\"Response should contain Patient and expected fields\", function () {\r",
+              "    pm.expect(response.resourceType).to.eql(\"Patient\");\r",
+              "    pm.expect(response.id).to.not.be.null;\r",
+              "});\r",
+              "\r",
+              "//Business validation\r",
+              "pm.test(\"Reponse Patient have right datatype as is not empty and gender should be male\", function () {\r",
+              "    pm.expect(response.name[0].given[0]).to.be.a(\"string\").and.not.empty;\r",
+              "    pm.expect(response.gender).to.eql(\"male\");\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"resourceType\": \"Patient\",\r\n    \"name\": [\r\n        {\r\n            \"use\": \"official\",\r\n            \"family\": \"Doe\",\r\n            \"given\": [\r\n                \"{{$randomFirstName}}\"\r\n            ]\r\n        }\r\n    ],\r\n    \"gender\": \"male\",\r\n    \"birthDate\": \"1980-01-01\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/Patient",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "Patient"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /Patient/{id}",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const response = pm.response.json();\r",
+              "\r",
+              "const expectedId = pm.collectionVariables.get(\"id\");\r",
+              "\r",
+              "//HTTP validation\r",
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "//Data validation\r",
+              "pm.test(\"Response should contain the correct resourceType and id\", function () {\r",
+              "    pm.expect(response.resourceType).to.eql(\"Patient\");\r",
+              "    pm.expect(response.id).to.eql(expectedId);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/Patient/{{id}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "Patient",
+            "{{id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PUT /Patient/{id}",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const response = pm.response.json();\r",
+              "\r",
+              "const expectedId = pm.collectionVariables.get(\"id\");\r",
+              "\r",
+              "//HTTP validation\r",
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "//Data validation\r",
+              "pm.test(\"Response should contain Patient and expected fields\", function () {\r",
+              "    pm.expect(pm.response.json().resourceType).to.eql(\"Patient\");\r",
+              "    pm.expect(response.id).to.eql(expectedId);\r",
+              "    pm.expect(response.active).to.be.a('boolean');\r",
+              "    pm.expect(response.name).to.be.an('array');\r",
+              "});\r",
+              "\r",
+              "//Business validation\r",
+              "pm.test(\"Patient name should be Jonas API\", function () {\r",
+              "    pm.expect(response.name[0].given).to.include(\"Jonas\");\r",
+              "    pm.expect(response.name[0].given).to.include(\"API\");\r",
+              "    });\r",
+              "pm.test(\"versionId increased after the update\", function (){\r",
+              "    pm.expect(Number(response.meta.versionId)).to.be.above(6);\r",
+              "});\r",
+              "pm.test(\"family is Andersson\", function(){\r",
+              "    pm.expect(response.name[0].family).to.eql(\"Andersson\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"resourceType\": \"Patient\",\r\n  \"id\": \"{{id}}\",\r\n  \"active\": true,\r\n  \"name\": [\r\n    {\r\n      \"family\": \"Andersson\",\r\n      \"given\": [\r\n        \"Jonas\",\r\n        \"API\"\r\n      ]\r\n    }\r\n  ],\r\n  \"gender\": \"male\",\r\n  \"birthDate\": \"1979-01-01\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/Patient/{{id}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "Patient",
+            "{{id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE /Patient/{id}",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const response = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Delete is blocked with status 409\", function () {\r",
+              "    pm.response.to.have.status(409);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response is an OperationOutcome\", function () {\r",
+              "    pm.expect(response.resourceType).to.eql(\"OperationOutcome\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Delete is blocked because the Patient is referenced\", function () {\r",
+              "    pm.expect(response.issue[0].severity).to.eql(\"error\");\r",
+              "    pm.expect(response.issue[0].diagnostics).to.include(\r",
+              "        \"at least one resource has a reference to this resource\"\r",
+              "    );\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/Patient/{{id}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "Patient",
+            "{{id}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": ""
+    },
+    {
+      "key": "id",
+      "value": ""
+    }
+  ]
+}
