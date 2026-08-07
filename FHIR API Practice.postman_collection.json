@@ -607,6 +607,343 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "/Observation",
+      "item": [
+        {
+          "name": "GET /Observation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "//HTTP validation\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "//Data validation\r",
+                  "pm.test(\"Response is a Bundle\", function () {\r",
+                  "    pm.expect(response.resourceType).to.eql(\"Bundle\");\r",
+                  "    pm.expect(response.type).to.eql(\"searchset\");\r",
+                  "    pm.expect(response.entry).to.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "//Business logic validation\r",
+                  "pm.test(\"Bundle contains at least one Observation\", function () {\r",
+                  "    pm.expect(response.entry.length).to.be.above(0);\r",
+                  "\r",
+                  "    response.entry.forEach(function (item) {\r",
+                  "        pm.expect(item.resource.resourceType).to.eql(\"Observation\");\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  "//Business valdation\r",
+                  "pm.test(\"Every Observation has a subject reference\", function () {\r",
+                  "\r",
+                  "    response.entry.forEach(function (item) {\r",
+                  "        pm.expect(item.resource.subject).to.exist;\r",
+                  "        pm.expect(item.resource.subject.reference).to.exist;\r",
+                  "\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Every Observation has a status and code\", function () {\r",
+                  "    response.entry.forEach(function (item) {\r",
+                  "        pm.expect(item.resource.status).to.exist;\r",
+                  "        pm.expect(item.resource.code).to.exist;\r",
+                  "    });\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/Observation",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "Observation"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /Observation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "// HTTP validation\r",
+                  "pm.test(\"Status code is 201\", function () {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});\r",
+                  "\r",
+                  "// Data validation\r",
+                  "pm.test(\"Response is an Observation resource\", function () {\r",
+                  "    pm.expect(response.resourceType).to.eql(\"Observation\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Observation ID is returned\", function () {\r",
+                  "    pm.expect(response.id).to.be.a(\"string\").and.not.empty;\r",
+                  "});\r",
+                  "\r",
+                  "// Business validation\r",
+                  "pm.test(\"Observation status is final\", function () {\r",
+                  "    pm.expect(response.status).to.eql(\"final\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Observation category is Vital Signs\", function () {\r",
+                  "    pm.expect(response.category[0].coding[0].code)\r",
+                  "        .to.eql(\"vital-signs\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Observation is a blood pressure panel\", function () {\r",
+                  "    pm.expect(response.code.coding[0].code)\r",
+                  "        .to.eql(\"85354-9\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Observation has systolic and diastolic values\", function () {\r",
+                  "    pm.expect(response.component).to.be.an(\"array\").that.has.lengthOf(2);\r",
+                  "\r",
+                  "    pm.expect(response.component[0].valueQuantity.value)\r",
+                  "        .to.be.a(\"number\");\r",
+                  "\r",
+                  "    pm.expect(response.component[1].valueQuantity.value)\r",
+                  "        .to.be.a(\"number\");\r",
+                  "});\r",
+                  "\r",
+                  "// Save created Observation ID\r",
+                  "pm.collectionVariables.set(\"observationId\", response.id);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"resourceType\": \"Observation\",\r\n    \"status\": \"final\",\r\n    \"category\": [\r\n        {\r\n            \"coding\": [\r\n                {\r\n                    \"system\": \"http://terminology.hl7.org/CodeSystem/observation-category\",\r\n                    \"code\": \"vital-signs\",\r\n                    \"display\": \"Vital Signs\"\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"code\": {\r\n        \"coding\": [\r\n            {\r\n                \"system\": \"http://loinc.org\",\r\n                \"code\": \"85354-9\",\r\n                \"display\": \"Blood pressure high\"\r\n            }\r\n        ]\r\n    },\r\n    \"subject\": {\r\n        \"reference\": \"Patient/137232247\"\r\n    },\r\n    \"encounter\": {\r\n        \"reference\": \"Encounter/137232288\"\r\n    },\r\n    \"effectiveDateTime\": \"2026-07-09T09:00:00\",\r\n    \"component\": [\r\n        {\r\n            \"code\": {\r\n                \"coding\": [\r\n                    {\r\n                        \"system\": \"http://loinc.org\",\r\n                        \"code\": \"8480-6\",\r\n                        \"display\": \"Systolic blood pressure high\"\r\n                    }\r\n                ]\r\n            },\r\n            \"valueQuantity\": {\r\n                \"value\": 118,\r\n                \"unit\": \"mmHg\",\r\n                \"system\": \"http://unitsofmeasure.org\",\r\n                \"code\": \"mm[Hg]\"\r\n            }\r\n        },\r\n        {\r\n            \"code\": {\r\n                \"coding\": [\r\n                    {\r\n                        \"system\": \"http://loinc.org\",\r\n                        \"code\": \"8462-4\",\r\n                        \"display\": \"Diastolic high blood pressure\"\r\n                    }\r\n                ]\r\n            },\r\n            \"valueQuantity\": {\r\n                \"value\": 74,\r\n                \"unit\": \"mmHg\",\r\n                \"system\": \"http://unitsofmeasure.org\",\r\n                \"code\": \"mm[Hg]\"\r\n            }\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/Observation",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "Observation"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /Observation/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "//HTTP validation\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "//Data validation\r",
+                  "pm.test(\"Response have correct data types and non-empty fields\", function () {\r",
+                  "    pm.expect(response.id).to.be.a(\"string\").and.not.empty;\r",
+                  "    pm.expect(response.code.coding).to.be.an(\"array\").that.is.not.empty;\r",
+                  "    pm.expect(response.code.coding[0].display).to.be.a(\"string\").and.not.empty;\r",
+                  "});\r",
+                  "\r",
+                  "//Business valdation\r",
+                  "pm.test(\"Observation code is 85354-9\", function () {\r",
+                  "    pm.expect(response.code.coding[0].code).to.eql(\"85354-9\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Observation status is final\", function () {\r",
+                  "    pm.expect(response.status).to.eql(\"final\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/Observation/{{observationId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "Observation",
+                "{{observationId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /Observation/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "const expectedObservationId = pm.collectionVariables.get(\"observationId\");\r",
+                  "\r",
+                  "// HTTP validation\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Data validation\r",
+                  "pm.test(\"Response is a Observation resource\", function () {\r",
+                  "    pm.expect(response.resourceType).to.eql(\"Observation\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Updated Observation has the correct ID\", function () {\r",
+                  "    pm.expect(response.id).to.eql(expectedObservationId);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Observation version increased after update\", function () {\r",
+                  "    pm.expect(Number(response.meta.versionId)).to.be.above(1);\r",
+                  "});\r",
+                  "\r",
+                  "// Business validation\r",
+                  "pm.test(\"Observation remains final\", function () {\r",
+                  "    pm.expect(response.status).to.eql(\"final\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Updated Observation keeps the expected diastolic code\", function () {\r",
+                  "    pm.expect(response.component[1].code.coding[0].code)\r",
+                  "        .to.eql(\"8462-4\");\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"resourceType\": \"Observation\",\r\n    \"id\": \"{{observationId}}\",\r\n    \"status\": \"final\",\r\n    \"category\": [\r\n        {\r\n            \"coding\": [\r\n                {\r\n                    \"system\": \"http://terminology.hl7.org/CodeSystem/observation-category\",\r\n                    \"code\": \"vital-signs\",\r\n                    \"display\": \"Vital Signs\"\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"code\": {\r\n        \"coding\": [\r\n            {\r\n                \"system\": \"http://loinc.org\",\r\n                \"code\": \"85354-9\",\r\n                \"display\": \"Blood pressure panel\"\r\n            }\r\n        ]\r\n    },\r\n    \"subject\": {\r\n        \"reference\": \"Patient/137232247\"\r\n    },\r\n    \"encounter\": {\r\n        \"reference\": \"Encounter/137232288\"\r\n    },\r\n    \"effectiveDateTime\": \"2026-07-09T09:00:00\",\r\n    \"component\": [\r\n        {\r\n            \"code\": {\r\n                \"coding\": [\r\n                    {\r\n                        \"system\": \"http://loinc.org\",\r\n                        \"code\": \"8480-6\",\r\n                        \"display\": \"Systolic blood pressure\"\r\n                    }\r\n                ]\r\n            },\r\n            \"valueQuantity\": {\r\n                \"value\": 115,\r\n                \"unit\": \"mmHg\",\r\n                \"system\": \"http://unitsofmeasure.org\",\r\n                \"code\": \"mm[Hg]\"\r\n            }\r\n        },\r\n        {\r\n            \"code\": {\r\n                \"coding\": [\r\n                    {\r\n                        \"system\": \"http://loinc.org\",\r\n                        \"code\": \"8462-4\",\r\n                        \"display\": \"Diastolic high blood\"\r\n                    }\r\n                ]\r\n            },\r\n            \"valueQuantity\": {\r\n                \"value\": 70,\r\n                \"unit\": \"mmHg\",\r\n                \"system\": \"http://unitsofmeasure.org\",\r\n                \"code\": \"mm[Hg]\"\r\n            }\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/Observation/{{observationId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "Observation",
+                "{{observationId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /Observation{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "// HTTP validation\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Data validation\r",
+                  "pm.test(\"Response is an OperationOutcome\", function () {\r",
+                  "    pm.expect(response.resourceType).to.eql(\"OperationOutcome\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"OperationOutcome contains an issue\", function () {\r",
+                  "    pm.expect(response.issue).to.be.an(\"array\").that.is.not.empty;\r",
+                  "});\r",
+                  "\r",
+                  "// Business validation\r",
+                  "pm.test(\"Delete operation succeeded\", function () {\r",
+                  "    pm.expect(response.issue[0].details.coding[0].code)\r",
+                  "        .to.eql(\"SUCCESSFUL_DELETE\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Delete response is informational\", function () {\r",
+                  "    pm.expect(response.issue[0].severity).to.eql(\"information\");\r",
+                  "    pm.expect(response.issue[0].code).to.eql(\"informational\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Diagnostics confirm one resource was deleted\", function () {\r",
+                  "    pm.expect(response.issue[0].diagnostics)\r",
+                  "        .to.include(\"Successfully deleted 1 resource\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/Observation/{{observationId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "Observation",
+                "{{observationId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "event": [
@@ -644,6 +981,10 @@
     },
     {
       "key": "patientId",
+      "value": ""
+    },
+    {
+      "key": "observationId",
       "value": ""
     }
   ]
