@@ -20,9 +20,9 @@ A Postman collection demonstrating API testing against a public HL7 FHIR R4 serv
 ## Roadmap
 
 - Patient ✅
-- Condition (in progress)
-- Observation
-- Encounter
+- Condition ✅
+- Observation ✅
+- Encounter (in progress)
 - Practitioner
 - Organization
 - Negative testing
