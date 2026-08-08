@@ -1287,6 +1287,343 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "/MedicationAdministration",
+      "item": [
+        {
+          "name": "GET /MedicationAdministration",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "//HTTP validation\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "//Data validation\r",
+                  "pm.test(\"Response is a Bundle\", function () {\r",
+                  "    pm.expect(response.resourceType).to.eql(\"Bundle\");\r",
+                  "    pm.expect(response.type).to.eql(\"searchset\");\r",
+                  "    pm.expect(response.entry).to.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "//Business logic validation\r",
+                  "pm.test(\"Bundle contains at least one MedicationAdministration\", function () {\r",
+                  "    pm.expect(response.entry.length).to.be.above(0);\r",
+                  "\r",
+                  "    response.entry.forEach(function (item) {\r",
+                  "        pm.expect(item.resource.resourceType).to.eql(\"MedicationAdministration\");\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  "// Business valdation\r",
+                  "pm.test(\"Every MedicationAdministration has a subject reference\", function () {\r",
+                  "\r",
+                  "    response.entry.forEach(function (item) {\r",
+                  "        pm.expect(item.resource.subject).to.exist;\r",
+                  "        pm.expect(item.resource.subject.reference).to.exist;\r",
+                  "\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"MedicationAdministration exists when not provided\", function () {\r",
+                  "    response.entry.forEach(function (item) {\r",
+                  "        if (item.resource.code) {\r",
+                  "            pm.expect(item.resource.medicationCodeableConcept).to.be.an(\"object\");\r",
+                  "        }\r",
+                  "    });\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/MedicationAdministration",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "MedicationAdministration"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /MedicationAdministration",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "// HTTP validation\r",
+                  "pm.test(\"Status code is 201\", function () {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});\r",
+                  "\r",
+                  "// Data validation\r",
+                  "pm.test(\"Response is a MedicationAdministration resource\", function () {\r",
+                  "    pm.expect(response.resourceType).to.eql(\"MedicationAdministration\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"MedicationAdministration ID is returned\", function () {\r",
+                  "    pm.expect(response.id).to.be.a(\"string\").and.not.empty;\r",
+                  "});\r",
+                  "\r",
+                  "// Business validation\r",
+                  "pm.test(\"MedicationAdministration status is completed\", function () {\r",
+                  "    pm.expect(response.status).to.eql(\"completed\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response medicationReference is an object\", function () {\r",
+                  "    pm.expect(response.medicationReference).to.be.an('object');\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Dose value is 77\", function () {\r",
+                  "    pm.expect(response.dosage.dose.value)\r",
+                  "        .to.eql(77);\r",
+                  "});\r",
+                  "\r",
+                  "pm.collectionVariables.set(\"medicationAdministrationId\", response.id);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"resourceType\": \"MedicationAdministration\",\r\n    \"meta\": {\r\n        \"versionId\": \"1\",\r\n        \"lastUpdated\": \"2026-07-25T10:01:38.107-04:00\",\r\n        \"source\": \"#Nzij1kXPYunJNXqJ\"\r\n    },\r\n    \"status\": \"completed\",\r\n    \"medicationReference\": {\r\n        \"reference\": \"Medication/137230041\"\r\n    },\r\n    \"subject\": {\r\n        \"reference\": \"Patient/137230016\"\r\n    },\r\n    \"context\": {\r\n        \"reference\": \"Encounter/137230029\"\r\n    },\r\n    \"effectiveDateTime\": \"2024-06-15T10:00:00+02:00\",\r\n    \"performer\": [\r\n        {\r\n            \"actor\": {\r\n                \"reference\": \"Practitioner/137230019\"\r\n            }\r\n        }\r\n    ],\r\n    \"request\": {\r\n        \"reference\": \"MedicationRequest/137230044\"\r\n    },\r\n    \"dosage\": {\r\n        \"text\": \"77 mg orally twice daily\",\r\n        \"dose\": {\r\n            \"value\": 77,\r\n            \"unit\": \"mg\",\r\n            \"system\": \"http://unitsofmeasure.org\",\r\n            \"code\": \"mg\"\r\n        }\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/MedicationAdministration",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "MedicationAdministration"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /MedicationAdministration/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "const expectedMedicationAdministrationId =\r",
+                  "    pm.collectionVariables.get(\"medicationAdministrationId\");\r",
+                  "\r",
+                  "//HTTP validation\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Data validation\r",
+                  "pm.test(\"Response is a MedicationAdministration resource\", function () {\r",
+                  "    pm.expect(response.resourceType).to.eql(\"MedicationAdministration\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"MedicationAdministration has the correct ID\", function () {\r",
+                  "    pm.expect(response.id)\r",
+                  "        .to.eql(expectedMedicationAdministrationId);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response have correct data types and non-empty fields\", function () {\r",
+                  "    pm.expect(response.id).to.be.a(\"string\").and.not.empty;\r",
+                  "    pm.expect(response.performer).to.be.an(\"array\").that.is.not.empty;\r",
+                  "    pm.expect(response.request.reference).to.be.a(\"string\").and.not.empty;\r",
+                  "});\r",
+                  "\r",
+                  "//Business valdation\r",
+                  "pm.test(\"Dos value is 77\", function () {\r",
+                  "    pm.expect(response.dosage.dose.value).to.eql(77);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"MedicationAdministration status is completed\", function () {\r",
+                  "    pm.expect(response.status).to.eql(\"completed\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/MedicationAdministration/{{medicationAdministrationId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "MedicationAdministration",
+                "{{medicationAdministrationId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /MedicationAdministration/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "const expectedMedicationAdministrationId = pm.collectionVariables.get(\"medicationAdministrationId\");\r",
+                  "\r",
+                  "// HTTP validation\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Data validation\r",
+                  "pm.test(\"Response is a MedicationAdministration resource\", function () {\r",
+                  "    pm.expect(response.resourceType).to.eql(\"MedicationAdministration\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Updated MedicationAdministration has the correct ID\", function () {\r",
+                  "    pm.expect(response.id).to.eql(expectedMedicationAdministrationId);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"MedicationAdministration version increased after update\", function () {\r",
+                  "    pm.expect(Number(response.meta.versionId)).to.be.above(1);\r",
+                  "});\r",
+                  "\r",
+                  "// Business validation\r",
+                  "pm.test(\"MedicationAdministration remains completed\", function () {\r",
+                  "    pm.expect(response.status).to.eql(\"completed\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Updated dose value is 65\", function () {\r",
+                  "    pm.expect(response.dosage.dose.value).to.eql(65);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"resourceType\": \"MedicationAdministration\",\r\n    \"id\" : \"{{medicationAdministrationId}}\",\r\n    \"meta\": {\r\n        \"versionId\": \"1\",\r\n        \"lastUpdated\": \"2026-07-25T10:01:38.107-04:00\",\r\n        \"source\": \"#Nzij1kXPYunJNXqJ\"\r\n    },\r\n    \"status\": \"completed\",\r\n    \"medicationReference\": {\r\n        \"reference\": \"Medication/137230041\"\r\n    },\r\n    \"subject\": {\r\n        \"reference\": \"Patient/137230016\"\r\n    },\r\n    \"context\": {\r\n        \"reference\": \"Encounter/137230029\"\r\n    },\r\n    \"effectiveDateTime\": \"2024-06-15T10:00:00+02:00\",\r\n    \"performer\": [\r\n        {\r\n            \"actor\": {\r\n                \"reference\": \"Practitioner/137230019\"\r\n            }\r\n        }\r\n    ],\r\n    \"request\": {\r\n        \"reference\": \"MedicationRequest/137230044\"\r\n    },\r\n    \"dosage\": {\r\n        \"text\": \"65 mg orally twice daily\",\r\n        \"dose\": {\r\n            \"value\": 65,\r\n            \"unit\": \"mg\",\r\n            \"system\": \"http://unitsofmeasure.org\",\r\n            \"code\": \"mg\"\r\n        }\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/MedicationAdministration/{{medicationAdministrationId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "MedicationAdministration",
+                "{{medicationAdministrationId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /MedicationAdministration/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "// HTTP validation\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Data validation\r",
+                  "pm.test(\"Response is an OperationOutcome\", function () {\r",
+                  "    pm.expect(response.resourceType).to.eql(\"OperationOutcome\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"OperationOutcome contains an issue\", function () {\r",
+                  "    pm.expect(response.issue).to.be.an(\"array\").that.is.not.empty;\r",
+                  "});\r",
+                  "\r",
+                  "// Business validation\r",
+                  "pm.test(\"Delete operation succeeded\", function () {\r",
+                  "    pm.expect(response.issue[0].details.coding[0].code)\r",
+                  "        .to.eql(\"SUCCESSFUL_DELETE\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Delete response is informational\", function () {\r",
+                  "    pm.expect(response.issue[0].severity).to.eql(\"information\");\r",
+                  "    pm.expect(response.issue[0].code).to.eql(\"informational\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Diagnostics confirm one resource was deleted\", function () {\r",
+                  "    pm.expect(response.issue[0].diagnostics)\r",
+                  "        .to.include(\"Successfully deleted 1 resource\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/MedicationAdministration/{{medicationAdministrationId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "MedicationAdministration",
+                "{{medicationAdministrationId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "event": [
@@ -1332,6 +1669,10 @@
     },
     {
       "key": "procedureId",
+      "value": ""
+    },
+    {
+      "key": "medicationAdministrationId",
       "value": ""
     }
   ]
