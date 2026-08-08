@@ -23,6 +23,7 @@ A Postman collection demonstrating API testing against a public HL7 FHIR R4 serv
 - Condition ✅
 - Observation ✅
 - Procedure ✅
+- MedicalAdministration ✅
 - Encounter (in progress)
 - Practitioner
 - Organization
