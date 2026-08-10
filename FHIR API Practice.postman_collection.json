@@ -949,76 +949,6 @@
       "name": "/Prodcedure",
       "item": [
         {
-          "name": "GET /Procedure",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const response = pm.response.json();\r",
-                  "\r",
-                  "//HTTP validation\r",
-                  "pm.test(\"Status code is 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "//Data validation\r",
-                  "pm.test(\"Response is a Bundle\", function () {\r",
-                  "    pm.expect(response.resourceType).to.eql(\"Bundle\");\r",
-                  "    pm.expect(response.type).to.eql(\"searchset\");\r",
-                  "    pm.expect(response.entry).to.be.an(\"array\");\r",
-                  "});\r",
-                  "\r",
-                  "//Business logic validation\r",
-                  "pm.test(\"Bundle contains at least one Procedure\", function () {\r",
-                  "    pm.expect(response.entry.length).to.be.above(0);\r",
-                  "\r",
-                  "    response.entry.forEach(function (item) {\r",
-                  "        pm.expect(item.resource.resourceType).to.eql(\"Procedure\");\r",
-                  "    });\r",
-                  "});\r",
-                  "\r",
-                  "//Business valdation\r",
-                  "pm.test(\"Every Procedure has a subject reference\", function () {\r",
-                  "\r",
-                  "    response.entry.forEach(function (item) {\r",
-                  "        pm.expect(item.resource.subject).to.exist;\r",
-                  "        pm.expect(item.resource.subject.reference).to.exist;\r",
-                  "\r",
-                  "    });\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Procedure code exists when provided\", function () {\r",
-                  "    response.entry.forEach(function (item) {\r",
-                  "        if (item.resource.code) {\r",
-                  "            pm.expect(item.resource.code).to.be.an(\"object\");\r",
-                  "        }\r",
-                  "    });\r",
-                  "});\r",
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/Procedure",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "Procedure"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
           "name": "POST /Prodcedure",
           "event": [
             {
@@ -1211,6 +1141,76 @@
               "path": [
                 "Procedure",
                 "{{procedureId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /Procedure",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "//HTTP validation\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "//Data validation\r",
+                  "pm.test(\"Response is a Bundle\", function () {\r",
+                  "    pm.expect(response.resourceType).to.eql(\"Bundle\");\r",
+                  "    pm.expect(response.type).to.eql(\"searchset\");\r",
+                  "    pm.expect(response.entry).to.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "//Business logic validation\r",
+                  "pm.test(\"Bundle contains at least one Procedure\", function () {\r",
+                  "    pm.expect(response.entry.length).to.be.above(0);\r",
+                  "\r",
+                  "    response.entry.forEach(function (item) {\r",
+                  "        pm.expect(item.resource.resourceType).to.eql(\"Procedure\");\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  "//Business valdation\r",
+                  "pm.test(\"Every Procedure has a subject reference\", function () {\r",
+                  "\r",
+                  "    response.entry.forEach(function (item) {\r",
+                  "        pm.expect(item.resource.subject).to.exist;\r",
+                  "        pm.expect(item.resource.subject.reference).to.exist;\r",
+                  "\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Procedure code exists when provided\", function () {\r",
+                  "    response.entry.forEach(function (item) {\r",
+                  "        if (item.resource.code) {\r",
+                  "            pm.expect(item.resource.code).to.be.an(\"object\");\r",
+                  "        }\r",
+                  "    });\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/Procedure",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "Procedure"
               ]
             }
           },
@@ -1624,6 +1624,329 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "/AdverseEvent",
+      "item": [
+        {
+          "name": "GET /AdverseEvent",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "// HTTP validation\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Data validation\r",
+                  "pm.test(\"Response is a Bundle\", function () {\r",
+                  "    pm.expect(response.resourceType).to.eql(\"Bundle\");\r",
+                  "    pm.expect(response.type).to.eql(\"searchset\");\r",
+                  "    pm.expect(response.link).to.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Total number of adverse events is 0\", function () { \r",
+                  "    pm.expect(response.total).to.be.a(\"number\"); \r",
+                  "});\r",
+                  "\r",
+                  "// Business validation\r",
+                  "pm.test(\"Response contains a link with relation 'self'\", function () { \r",
+                  "    const selfLink = response.link.find(link => link.relation === 'self');\r",
+                  "    pm.expect(selfLink).to.not.be.undefined;\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/AdverseEvent",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "AdverseEvent"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /AdverseEvent",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "// HTTP validation\r",
+                  "pm.test(\"Status code is 201\", function () {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});\r",
+                  "\r",
+                  "// Data validation\r",
+                  "pm.test(\"Response is an AdverseEvent resource\", function () {\r",
+                  "    pm.expect(response.resourceType).to.eql(\"AdverseEvent\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"AdverseEvent is returned\", function () {\r",
+                  "    pm.expect(response.id).to.be.a(\"string\").and.not.empty;\r",
+                  "});\r",
+                  "\r",
+                  "// Business validation\r",
+                  "pm.test(\"AdverseEvent code is mild\", function () {\r",
+                  "    pm.expect(response.severity.coding[0].code).to.eql(\"mild\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"AdverseEvent system is h17\", function () {\r",
+                  "    pm.expect(response.severity.coding[0].system).to.eql(\"http://hl7.org\");\r",
+                  "});\r",
+                  "\r",
+                  "\r",
+                  "// Save created AdverseEvent ID\r",
+                  "pm.collectionVariables.set(\"adverseEventId\", response.id);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"resourceType\": \"AdverseEvent\",\r\n  \"identifier\": {\r\n    \"system\": \"http://acme.org\",\r\n    \"value\": \"ae-98765\"\r\n  },\r\n  \"actuality\": \"actual\",\r\n  \"category\": [\r\n    {\r\n      \"coding\": [\r\n        {\r\n          \"system\": \"http://hl7.org\",\r\n          \"code\": \"product-use-error\",\r\n          \"display\": \"Product Use Error\"\r\n        }\r\n      ]\r\n    }\r\n  ],\r\n  \"event\": {\r\n    \"coding\": [\r\n      {\r\n        \"system\": \"http://snomed.info\",\r\n        \"code\": \"271807003\",\r\n        \"display\": \"Skin rash type 5\"\r\n      }\r\n    ],\r\n    \"text\": \"Mild skin rash developed after medication administration\"\r\n  },\r\n  \"date\": \"2026-08-10T09:30:00Z\",\r\n  \"severity\": {\r\n    \"coding\": [\r\n      {\r\n        \"system\": \"http://hl7.org\",\r\n        \"code\": \"mild\",\r\n        \"display\": \"Mild\"\r\n      }\r\n    ]\r\n  },\r\n  \"outcome\": {\r\n    \"coding\": [\r\n      {\r\n        \"system\": \"http://hl7.org\",\r\n        \"code\": \"recovering\",\r\n        \"display\": \"Recovering\"\r\n      }\r\n    ]\r\n  }\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/AdverseEvent",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "AdverseEvent"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /AdverseEvent/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "const exceptedAdverseEventId =\r",
+                  "    pm.collectionVariables.get(\"adverseEventId\");\r",
+                  "\r",
+                  "//HTTP validation\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Data validation\r",
+                  "pm.test(\"Response is an AdverseEvent resource\", function () {\r",
+                  "    pm.expect(response.resourceType).to.eql(\"AdverseEvent\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"AdverseEvent has the correct ID\", function () {\r",
+                  "    pm.expect(response.id)\r",
+                  "        .to.eql(exceptedAdverseEventId);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response have correct data types and non-empty fields\", function () {\r",
+                  "    pm.expect(response.id).to.be.a(\"string\").and.not.empty;\r",
+                  "    pm.expect(response.event.coding).to.be.an(\"array\");\r",
+                  "    pm.expect(response.severity.coding).to.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "//Business valdation\r",
+                  "pm.test(\"Outcome coding code field is recovering\", function () {\r",
+                  "    pm.expect(response.outcome.coding[0].code).to.eql(\"recovering\");\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/AdverseEvent/{{adverseEventId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "AdverseEvent",
+                "{{adverseEventId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /AdverseEvent/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "const expectedAdverseEventId  =\r",
+                  "    pm.collectionVariables.get(\"adverseEventId\");\r",
+                  "\r",
+                  "// HTTP validation\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Data validation\r",
+                  "pm.test(\"Response is a AdverseEvent resource\", function () {\r",
+                  "    pm.expect(response.resourceType).to.eql(\"AdverseEvent\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Updated AdverseEvent has the correct ID\", function () {\r",
+                  "    pm.expect(response.id).to.eql(expectedAdverseEventId);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"AdverseEvent version increased after update\", function () {\r",
+                  "    pm.expect(Number(response.meta.versionId)).to.be.above(1);\r",
+                  "});\r",
+                  "\r",
+                  "// Business validation\r",
+                  "pm.test(\"Code field in Severity updates to severe\", function () {\r",
+                  "    pm.expect(response.severity.coding[0].code).to.eql(\"severe\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Updated outcome code value is recovering\", function () {\r",
+                  "    pm.expect(response.outcome.coding[0].code).to.eql(\"recovering\");\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"resourceType\": \"AdverseEvent\",\r\n    \"id\": \"{{adverseEventId}}\",\r\n    \"meta\": {\r\n        \"versionId\": \"2\",\r\n        \"lastUpdated\": \"2026-08-10T06:57:27.403-04:00\",\r\n        \"source\": \"#bBmeLpN9HHX1pvXE\"\r\n    },\r\n    \"identifier\": {\r\n        \"system\": \"http://acme.org\",\r\n        \"value\": \"ae-98765\"\r\n    },\r\n    \"actuality\": \"actual\",\r\n    \"category\": [\r\n        {\r\n            \"coding\": [\r\n                {\r\n                    \"system\": \"http://hl7.org\",\r\n                    \"code\": \"product-use-error\",\r\n                    \"display\": \"Product Use Error\"\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"event\": {\r\n        \"coding\": [\r\n            {\r\n                \"system\": \"http://snomed.info\",\r\n                \"code\": \"271807003\",\r\n                \"display\": \"Skin rash type 5\"\r\n            }\r\n        ],\r\n        \"text\": \"Mild skin rash developed after medication administration\"\r\n    },\r\n    \"date\": \"2026-08-10T09:30:00Z\",\r\n    \"severity\": {\r\n        \"coding\": [\r\n            {\r\n                \"system\": \"http://hl7.org\",\r\n                \"code\": \"severe\",\r\n                \"display\": \"Severe\"\r\n            }\r\n        ]\r\n    },\r\n    \"outcome\": {\r\n        \"coding\": [\r\n            {\r\n                \"system\": \"http://hl7.org\",\r\n                \"code\": \"recovering\",\r\n                \"display\": \"Recovering\"\r\n            }\r\n        ]\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/AdverseEvent/{{adverseEventId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "AdverseEvent",
+                "{{adverseEventId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /AdverseEvent/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "// HTTP validation\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Data validation\r",
+                  "pm.test(\"Response is an OperationOutcome\", function () {\r",
+                  "    pm.expect(response.resourceType).to.eql(\"OperationOutcome\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"OperationOutcome contains an issue\", function () {\r",
+                  "    pm.expect(response.issue).to.be.an(\"array\").that.is.not.empty;\r",
+                  "});\r",
+                  "\r",
+                  "// Business validation\r",
+                  "pm.test(\"Delete operation succeeded\", function () {\r",
+                  "    pm.expect(response.issue[0].details.coding[0].code)\r",
+                  "        .to.eql(\"SUCCESSFUL_DELETE\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Delete response is informational\", function () {\r",
+                  "    pm.expect(response.issue[0].severity).to.eql(\"information\");\r",
+                  "    pm.expect(response.issue[0].code).to.eql(\"informational\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Diagnostics confirm one resource was deleted\", function () {\r",
+                  "    pm.expect(response.issue[0].diagnostics)\r",
+                  "        .to.include(\"Successfully deleted 1 resource\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/AdverseEvent/{{adverseEventId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "AdverseEvent",
+                "{{adverseEventId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "event": [
@@ -1673,6 +1996,10 @@
     },
     {
       "key": "medicationAdministrationId",
+      "value": ""
+    },
+    {
+      "key": "adverseEventId",
       "value": ""
     }
   ]
