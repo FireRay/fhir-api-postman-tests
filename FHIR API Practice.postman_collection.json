@@ -1947,6 +1947,347 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "/FamilyHistory",
+      "item": [
+        {
+          "name": "GET /FamilyMemberHistory",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "// HTTP validation\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Data validation\r",
+                  "pm.test(\"Response is a Bundle\", function () {\r",
+                  "    pm.expect(response.resourceType).to.eql(\"Bundle\");\r",
+                  "    pm.expect(response.type).to.eql(\"searchset\");\r",
+                  "    pm.expect(response.link).to.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Total number FamilyMemberHistory entries in the response\", function () { \r",
+                  "    pm.expect(response.total).to.be.a(\"number\");\r",
+                  "    pm.expect(response.total).to.be.at.least(0); \r",
+                  "});\r",
+                  "\r",
+                  "if (response.total > 0) {\r",
+                  "    pm.test(\"Entry response is a non-empty array\", function () {\r",
+                  "        pm.expect(response.entry).to.be.an(\"array\")\r",
+                  "            .that.is.not.empty;\r",
+                  "    });\r",
+                  "\r",
+                  "    pm.test(\"Every resource is a FamilyMemberHistory with a valid ID\", function () {\r",
+                  "        response.entry.forEach(function (item) {\r",
+                  "            pm.expect(item.resource.resourceType)\r",
+                  "                .to.eql(\"FamilyMemberHistory\");\r",
+                  "\r",
+                  "            pm.expect(item.resource.id)\r",
+                  "                .to.be.a(\"string\")\r",
+                  "                .and.not.empty;\r",
+                  "        });\r",
+                  "    });\r",
+                  "}\r",
+                  "   \r",
+                  "\r",
+                  "// Business validation\r",
+                  "pm.test(\"Response contains a link with relation 'self'\", function () { \r",
+                  "    const selfLink = response.link.find(link => link.relation === 'self');\r",
+                  "    pm.expect(selfLink).to.not.be.undefined;\r",
+                  "});\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/FamilyMemberHistory",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "FamilyMemberHistory"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /FamilyMemberHistory",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "// HTTP validation\r",
+                  "pm.test(\"Status code is 201\", function () {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});\r",
+                  "\r",
+                  "// Data validation\r",
+                  "pm.test(\"Response is a FamilyMemberHistory resource\", function () {\r",
+                  "    pm.expect(response.resourceType).to.eql(\"FamilyMemberHistory\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"FamilyMemberHistory ID is returned\", function () {\r",
+                  "    pm.expect(response.id).to.be.a(\"string\").and.not.empty;\r",
+                  "});\r",
+                  "\r",
+                  "// Business validation\r",
+                  "pm.test(\"FamilyMemberHistory status is completed\", function () {\r",
+                  "    pm.expect(response.status).to.eql(\"completed\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response relationship is Father (FTH)\", function () {\r",
+                  "   pm.expect(response.relationship.coding[0].code).to.eql(\"FTH\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Condition onset age is 55\", function () {\r",
+                  "    pm.expect(response.condition[0].onsetAge.value)\r",
+                  "        .to.eql(55);\r",
+                  "});\r",
+                  "\r",
+                  "pm.collectionVariables.set(\"familyMemberHistoryId\", response.id);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"resourceType\": \"FamilyMemberHistory\",\r\n  \"status\": \"completed\",\r\n  \"patient\": {\r\n    \"reference\": \"Patient/137230016\"\r\n  },\r\n  \"relationship\": {\r\n    \"coding\": [\r\n      {\r\n        \"system\": \"http://terminology.hl7.org/CodeSystem/v3-RoleCode\",\r\n        \"code\": \"FTH\",\r\n        \"display\": \"Father\"\r\n      }\r\n    ],\r\n    \"text\": \"Father\"\r\n  },\r\n  \"deceasedBoolean\": false,\r\n  \"condition\": [\r\n    {\r\n      \"code\": {\r\n        \"coding\": [\r\n          {\r\n            \"system\": \"http://hl7.org/fhir/sid/icd-10\",\r\n            \"code\": \"E11.9\",\r\n            \"display\": \"Type 2 diabetes mellitus\"\r\n          }\r\n        ],\r\n        \"text\": \"Type 4 diabetes\"\r\n      },\r\n      \"onsetAge\": {\r\n        \"value\": 55,\r\n        \"unit\": \"years\",\r\n        \"system\": \"http://unitsofmeasure.org\",\r\n        \"code\": \"a\"\r\n      }\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/FamilyMemberHistory",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "FamilyMemberHistory"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /FamilyMemberHistory/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "const expectedFamilyMemberHistoryId =\r",
+                  "    pm.collectionVariables.get(\"familyMemberHistoryId\");\r",
+                  "\r",
+                  "//HTTP validation\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Data validation\r",
+                  "pm.test(\"Response is the correct FamilyMemberHistoryId resource\", function () {\r",
+                  "    pm.expect(response.id).to.eql(expectedFamilyMemberHistoryId);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response have correct data types and non-empty fields\", function () {\r",
+                  "    pm.expect(response.id).to.be.a(\"string\").and.not.empty;\r",
+                  "    pm.expect(response.condition).to.be.an(\"array\").that.is.not.empty;\r",
+                  "    pm.expect(response.resourceType).to.eql(\"FamilyMemberHistory\");\r",
+                  "});\r",
+                  "\r",
+                  "//Business valdation\r",
+                  "pm.test(\"onsetAge value is 55\", function () {\r",
+                  "    pm.expect(response.condition[0].onsetAge.value).to.eql(55);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"FamilyMemberHistory relationship is father )FTH)\", function () {\r",
+                  "    pm.expect(response.relationship.coding[0].code).to.eql(\"FTH\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"FamilyMemberHistory status is completed\", function () {\r",
+                  "    pm.expect(response.status).to.eql(\"completed\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/FamilyMemberHistory/{{familyMemberHistoryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "FamilyMemberHistory",
+                "{{familyMemberHistoryId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /FamilyMemberHistory/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "const expectedFamilyMemberHistoryId = pm.collectionVariables.get(\"familyMemberHistoryId\");\r",
+                  "\r",
+                  "// HTTP validation\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Data validation\r",
+                  "pm.test(\"Response is a FamilyMemberHistory resource\", function () {\r",
+                  "    pm.expect(response.resourceType).to.eql(\"FamilyMemberHistory\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Updated expectedFamilyMemberHistoryId has the correct ID\", function () {\r",
+                  "    pm.expect(response.id).to.eql(expectedFamilyMemberHistoryId);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"FamilyMemberHistory version increased after update\", function () {\r",
+                  "    pm.expect(Number(response.meta.versionId)).to.be.above(1);\r",
+                  "});\r",
+                  "\r",
+                  "// Business validation\r",
+                  "pm.test(\"FamilyMemberHistory remains completed\", function () {\r",
+                  "    pm.expect(response.status).to.eql(\"completed\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Updated onset age is 63\", function () {\r",
+                  "    pm.expect(response.condition[0].onsetAge.value).to.eql(63);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"resourceType\": \"FamilyMemberHistory\",\r\n  \"id\" : \"{{familyMemberHistoryId}}\",\r\n  \"status\": \"completed\",\r\n  \"patient\": {\r\n    \"reference\": \"Patient/137230016\"\r\n  },\r\n  \"relationship\": {\r\n    \"coding\": [\r\n      {\r\n        \"system\": \"http://terminology.hl7.org/CodeSystem/v3-RoleCode\",\r\n        \"code\": \"FTH\",\r\n        \"display\": \"Father\"\r\n      }\r\n    ],\r\n    \"text\": \"Father\"\r\n  },\r\n  \"deceasedBoolean\": false,\r\n  \"condition\": [\r\n    {\r\n      \"code\": {\r\n        \"coding\": [\r\n          {\r\n            \"system\": \"http://hl7.org/fhir/sid/icd-10\",\r\n            \"code\": \"E11.9\",\r\n            \"display\": \"Type 2 diabetes mellitus\"\r\n          }\r\n        ],\r\n        \"text\": \"Type 2 diabetes\"\r\n      },\r\n      \"onsetAge\": {\r\n        \"value\": 63,\r\n        \"unit\": \"years\",\r\n        \"system\": \"http://unitsofmeasure.org\",\r\n        \"code\": \"a\"\r\n      }\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/FamilyMemberHistory/{{familyMemberHistoryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "FamilyMemberHistory",
+                "{{familyMemberHistoryId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /FamilyMemberHistory/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "// HTTP validation\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Data validation\r",
+                  "pm.test(\"Response is an OperationOutcome\", function () {\r",
+                  "    pm.expect(response.resourceType).to.eql(\"OperationOutcome\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"OperationOutcome contains an issue\", function () {\r",
+                  "    pm.expect(response.issue).to.be.an(\"array\").that.is.not.empty;\r",
+                  "});\r",
+                  "\r",
+                  "// Business validation\r",
+                  "pm.test(\"Delete operation succeeded\", function () {\r",
+                  "    pm.expect(response.issue[0].details.coding[0].code)\r",
+                  "        .to.eql(\"SUCCESSFUL_DELETE\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Delete response is informational\", function () {\r",
+                  "    pm.expect(response.issue[0].severity).to.eql(\"information\");\r",
+                  "    pm.expect(response.issue[0].code).to.eql(\"informational\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Diagnostics confirm one resource was deleted\", function () {\r",
+                  "    pm.expect(response.issue[0].diagnostics)\r",
+                  "        .to.include(\"Successfully deleted 1 resource\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/FamilyMemberHistory/{{familyMemberHistoryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "FamilyMemberHistory",
+                "{{familyMemberHistoryId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "/"
     }
   ],
   "event": [
@@ -2000,6 +2341,10 @@
     },
     {
       "key": "adverseEventId",
+      "value": ""
+    },
+    {
+      "key": "familyMemberHistoryId",
       "value": ""
     }
   ]
