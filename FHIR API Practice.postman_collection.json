@@ -2192,7 +2192,7 @@
                   "pm.test(\"Updated onset age is 63\", function () {\r",
                   "    pm.expect(response.condition[0].onsetAge.value).to.eql(63);\r",
                   "});\r",
-                  ""
+                  "  "
                 ],
                 "type": "text/javascript",
                 "packages": {},
@@ -2288,6 +2288,360 @@
         }
       ],
       "description": "/"
+    },
+    {
+      "name": "/EpisodeOfCare",
+      "item": [
+        {
+          "name": "GET /EpisodeOfCare",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "// HTTP validation\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Data validation\r",
+                  "pm.test(\"Response is a Bundle\", function () {\r",
+                  "    pm.expect(response.resourceType).to.eql(\"Bundle\");\r",
+                  "    pm.expect(response.type).to.eql(\"searchset\");\r",
+                  "    pm.expect(response.link).to.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Total number EpisodeOfCare entries in the response\", function () { \r",
+                  "    pm.expect(response.total).to.be.a(\"number\");\r",
+                  "    pm.expect(response.total).to.be.at.least(0); \r",
+                  "});\r",
+                  "\r",
+                  "if (response.total > 0) {\r",
+                  "    pm.test(\"Entry response is a non-empty array\", function () {\r",
+                  "        pm.expect(response.entry).to.be.an(\"array\")\r",
+                  "            .that.is.not.empty;\r",
+                  "    });\r",
+                  "\r",
+                  "    pm.test(\"Every resource is an EpisodeOfCare with a valid ID\", function () {\r",
+                  "        response.entry.forEach(function (item) {\r",
+                  "            pm.expect(item.resource.resourceType)\r",
+                  "                .to.eql(\"EpisodeOfCare\");\r",
+                  "\r",
+                  "            pm.expect(item.resource.id)\r",
+                  "                .to.be.a(\"string\")\r",
+                  "                .and.not.empty;\r",
+                  "        });\r",
+                  "    });\r",
+                  "}\r",
+                  "   \r",
+                  "\r",
+                  "// Business validation\r",
+                  "pm.test(\"Response contains a link with relation 'self'\", function () { \r",
+                  "    const selfLink = response.link.find(link => link.relation === 'self');\r",
+                  "    pm.expect(selfLink).to.not.be.undefined;\r",
+                  "});\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/EpisodeOfCare",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "EpisodeOfCare"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /EpisodeOfCare",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "// HTTP validation\r",
+                  "pm.test(\"Status code is 201\", function () {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});\r",
+                  "\r",
+                  "// Data validation\r",
+                  "pm.test(\"Response is an EpisodeOfCare resource\", function () {\r",
+                  "    pm.expect(response.resourceType).to.eql(\"EpisodeOfCare\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"EpisodeOfCare ID is returned\", function () {\r",
+                  "    pm.expect(response.id).to.be.a(\"string\").and.not.empty;\r",
+                  "});\r",
+                  "\r",
+                  "// Business validation\r",
+                  "pm.test(\"EpisodeOfCare status is active\", function () {\r",
+                  "    pm.expect(response.status).to.eql(\"active\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"EpisodeOfCare type is Remote Patient Monitoring - Heart2\", function () {\r",
+                  "    pm.expect(response.type[0].text).to.eql(\"Remote Patient Monitoring - Heart2\");\r",
+                  "        \r",
+                  "});\r",
+                  "\r",
+                  "pm.collectionVariables.set(\"episodeOfCareId\", response.id);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n                \"resourceType\": \"EpisodeOfCare\",\r\n                \"meta\": {\r\n                    \"versionId\": \"1\",\r\n                    \"lastUpdated\": \"2026-07-28T06:29:30.643-04:00\",\r\n                    \"source\": \"#I3X1vWwAFDYQEkLC\"\r\n                },\r\n                \"status\": \"active\",\r\n                \"type\": [\r\n                    {\r\n                        \"text\": \"Remote Patient Monitoring - Heart2\"\r\n                    }\r\n                ],\r\n                \"patient\": {\r\n                    \"reference\": \"Patient/137237641\"\r\n                },\r\n                \"period\": {\r\n                    \"start\": \"2026-06-28\"\r\n                }\r\n            }\r\n            ",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/EpisodeOfCare",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "EpisodeOfCare"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /EpisodeOfCare/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "const expectedEpisodeOfCareId =\r",
+                  "    pm.collectionVariables.get(\"episodeOfCareId\");\r",
+                  "\r",
+                  "// HTTP validation\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Data validation\r",
+                  "pm.test(\"Response is the correct EpisodeOfCare resource\", function () {\r",
+                  "    pm.expect(response.id).to.eql(expectedEpisodeOfCareId);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response has correct data types and non-empty fields\", function () {\r",
+                  "    pm.expect(response.id).to.be.a(\"string\").and.not.empty;\r",
+                  "    pm.expect(response.type).to.be.an(\"array\").that.is.not.empty;\r",
+                  "    pm.expect(response.resourceType).to.eql(\"EpisodeOfCare\");\r",
+                  "});\r",
+                  "\r",
+                  "// Business valdation\r",
+                  "pm.test(\"Response is Remote Patient Monitoring - Heart2\", function () {\r",
+                  "    pm.expect(response.type[0].text).to.eql(\"Remote Patient Monitoring - Heart2\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"EpisodeOfCare status is active\", function () {\r",
+                  "    pm.expect(response.status).to.eql(\"active\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/EpisodeOfCare/{{episodeOfCareId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "EpisodeOfCare",
+                "{{episodeOfCareId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /EpisodeOfCare/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "    const response = pm.response.json();\r",
+                  "    const expectedEpisodeOfCareId = pm.collectionVariables.get(\"episodeOfCareId\");\r",
+                  "\r",
+                  "    // HTTP validation\r",
+                  "    pm.test(\"Status code is 200\", function () {\r",
+                  "        pm.response.to.have.status(200);\r",
+                  "    });\r",
+                  "\r",
+                  "    // Data validation\r",
+                  "    pm.test(\"Response is an EpisodeOfCare resource\", function () {\r",
+                  "        pm.expect(response.resourceType).to.eql(\"EpisodeOfCare\");\r",
+                  "    });\r",
+                  "\r",
+                  "    pm.test(\"Updated EpisodeOfCareId has the correct ID\", function () {\r",
+                  "        pm.expect(response.id).to.eql(expectedEpisodeOfCareId);\r",
+                  "    });\r",
+                  "\r",
+                  "    pm.test(\"EpisodeOfCare version increased after update\", function () {\r",
+                  "        pm.expect(Number(response.meta.versionId)).to.be.above(1);\r",
+                  "    });\r",
+                  "\r",
+                  "    // Business validation\r",
+                  "    pm.test(\"Response type text is Remote Patient Monitoring - Liver failure\", function () {\r",
+                  "        pm.expect(response.type[0].text).to.eql(\"Remote Patient Monitoring - Liver failure\");\r",
+                  "    });\r",
+                  "\r",
+                  "\r",
+                  "    "
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n                \"resourceType\": \"EpisodeOfCare\",\r\n                \"id\" : \"{{episodeOfCareId}}\",\r\n                \"meta\": {\r\n                    \"versionId\": \"1\",\r\n                    \"lastUpdated\": \"2026-07-28T06:29:30.643-04:00\",\r\n                    \"source\": \"#I3X1vWwAFDYQEkLC\"\r\n                },\r\n                \"status\": \"active\",\r\n                \"type\": [\r\n                    {\r\n                        \"text\": \"Remote Patient Monitoring - Liver failure\"\r\n                    }\r\n                ],\r\n                \"patient\": {\r\n                    \"reference\": \"Patient/137237641\"\r\n                },\r\n                \"period\": {\r\n                    \"start\": \"2026-06-28\"\r\n                }\r\n            }\r\n            ",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/EpisodeOfCare/{{episodeOfCareId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "EpisodeOfCare",
+                "{{episodeOfCareId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /EpisodeOfCare/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "// HTTP validation\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Data validation\r",
+                  "pm.test(\"Response is an OperationOutcome\", function () {\r",
+                  "    pm.expect(response.resourceType).to.eql(\"OperationOutcome\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"OperationOutcome contains an issue\", function () {\r",
+                  "    pm.expect(response.issue).to.be.an(\"array\").that.is.not.empty;\r",
+                  "});\r",
+                  "\r",
+                  "// Business validation\r",
+                  "pm.test(\"Delete operation succeeded\", function () {\r",
+                  "    pm.expect(response.issue[0].details.coding[0].code)\r",
+                  "        .to.eql(\"SUCCESSFUL_DELETE\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Delete response is informational\", function () {\r",
+                  "    pm.expect(response.issue[0].severity).to.eql(\"information\");\r",
+                  "    pm.expect(response.issue[0].code).to.eql(\"informational\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Diagnostics confirm one resource was deleted\", function () {\r",
+                  "    pm.expect(response.issue[0].diagnostics)\r",
+                  "        .to.include(\"Successfully deleted 1 resource\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/EpisodeOfCare/{{episodeOfCareId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "EpisodeOfCare",
+                "{{episodeOfCareId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "event": [
@@ -2345,6 +2699,10 @@
     },
     {
       "key": "familyMemberHistoryId",
+      "value": ""
+    },
+    {
+      "key": "episodeOfCareId",
       "value": ""
     }
   ]
