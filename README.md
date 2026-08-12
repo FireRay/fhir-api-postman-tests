@@ -26,6 +26,7 @@ A Postman collection demonstrating API testing against a public HL7 FHIR R4 serv
 - MedicalAdministration ✅
 - AdverseEvent ✅
 - FamilyMemberHistory ✅
+- EpisodeOfCare ✅
 - Encounter (in progress)
 - Practitioner
 - Organization
